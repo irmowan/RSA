@@ -1,6 +1,5 @@
 __author__ = 'irmo'
 import random
-
 # 128 bit RSA algorithm
 
 print("Hello, RSA!")
@@ -42,20 +41,43 @@ def miller_rabin(n, c=100):
     return True
 
 
-def random_prime(len):
+def random_prime(l):
     while True:
-        x = random.randrange(2 ** len, 2 ** (len + 1))
+        x = random.randrange(2 ** l, 2 ** (l + 1))
         if miller_rabin(x):
             return x
 
 
-test = 300
-from time import clock
+def generating_key():
+    def extend_gcd(a, b):
+        # ax + by = gcd
+        # return x, y, gcd
+        if b == 0:
+            return 1, 0, a
+        else:
+            x, y, g = extend_gcd(b, a % b)
+            return y, x - y * (a // b), g
 
-start = clock()
-for i in range(test):
-    x = random_prime(64)
-    print(x)
+    def inv(a, n):
+        x, y, g = extend_gcd(a, n)
+        if g == 1:
+            return x % n
+        else:
+            return None
 
-finish = clock()
-print((finish - start))
+    p, q = 0, 0
+    while p * q < 2 ** 127:
+        p = random_prime(64)
+        q = random_prime(64)
+    n = p * q
+    phi_n = (p - 1) * (q - 1)
+    d = random.randrange(1, phi_n)
+    while inv(d, phi_n) is None:
+        d = random.randrange(1, phi_n)
+    e = inv(d, phi_n)
+    print('Public  Key: ', 'n =', n, ', e =', e)
+    print('Private Key: ', 'd =', d)
+    return n, e, d
+
+
+n, e, d = generating_key()
