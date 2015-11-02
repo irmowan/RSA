@@ -5,17 +5,13 @@ import random
 print("Hello, RSA!")
 
 
-# e is public key
-def encrypt(m, e, n):
-    return pow(m, e, n)
-
-
-# d is private key
-def decrypt(c, d, n):
-    return pow(c, d, n)
-
-
 def miller_rabin(n, c=100):
+    """
+    :param n: the number needed to be test
+    :param c: test count, default value is 100
+    :return: whether n is a prime after c tests
+    """
+
     def mr_test(n, m, k, a):
         b = pow(a, m, n)
         if b == 1:
@@ -42,6 +38,10 @@ def miller_rabin(n, c=100):
 
 
 def random_prime(l):
+    """
+    :param l: length
+    :return: a binary prime of length l
+    """
     while True:
         x = random.randrange(2 ** l, 2 ** (l + 1))
         if miller_rabin(x):
@@ -49,9 +49,18 @@ def random_prime(l):
 
 
 def generating_key():
+    """
+    p, q is two large prime.
+    using p,q to generate RSA key.
+    :return: RSA Public Key n, e, and RSA Private Key d
+    """
+
     def extend_gcd(a, b):
-        # ax + by = gcd
-        # return x, y, gcd
+        """
+        :param a: ax + by = gcd
+        :param b: ax + by = gcd
+        :return: x, y, gcd
+        """
         if b == 0:
             return 1, 0, a
         else:
@@ -78,6 +87,16 @@ def generating_key():
     print('Public  Key: ', 'n =', n, ', e =', e)
     print('Private Key: ', 'd =', d)
     return n, e, d
+
+
+# e is public key
+def encrypt(m, e, n):
+    return pow(m, e, n)
+
+
+# d is private key
+def decrypt(c, d, n):
+    return pow(c, d, n)
 
 
 n, e, d = generating_key()
