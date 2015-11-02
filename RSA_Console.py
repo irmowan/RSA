@@ -81,3 +81,9 @@ def generating_key():
 
 
 n, e, d = generating_key()
+k = random.randrange(2 ** 63, 2 ** 64)
+print('k = ', k)
+c = encrypt(k, e, n)
+print('c = ', c)
+m = decrypt(c, d, n)
+print('m = ', m)
