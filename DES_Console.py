@@ -249,39 +249,38 @@ def generating_IV():
     return s
 
 
-def main():
+def main(Message, Key, Type=1):
     print('Hello, DES!')
 
     # Choose a type
-    print('1. Encrypt a plain text')
-    print('2. Decrypt a cipher text')
-    print('Enter the choice(1 or 2):')
-    choice = int(input())
+    choice = Type
 
     # Read input from files
-    file_Key = open('Key.txt', 'r')
-    file_Text = open('Text.txt', 'r')
+    # file_Key = open('Key.txt', 'r')
+    # file_Text = open('Text.txt', 'r')
     IV = generating_IV()
-    Key = file_Key.read().strip()
-    Message = file_Text.read().strip()
+    # Key = file_Key.read().strip()
+    # Message = file_Text.read().strip()
+    Key = Key.strip()
+    Message = Message.strip()
 
     print('IV:     ', IV)
     print('Key:    ', Key)
     print('Text:   ', Message)
-    print()
 
     # Check legality of input
     if legality(Key, IV, Message) == 0:
-        return
+        return 'The input is illegal.'
 
     IV = string2list(IV)
     Key = string2list(Key)
     Message = string2list(Message)
+
     if choice == 1:
         # Check input
         if (len(Message) % 8 != 0) or (len(Message) == 0):
             print('The length of plain text must be multiple of 8, and could not be 0.')
-            return
+            return 'The length of plain text must be multiple of 8, and could not be 0.'
         Message = padding(Message)
 
         # Encrypt a plain text
@@ -294,11 +293,13 @@ def main():
             last_cipher_list = [int(last_cipher[x]) for x in range(64)]
             cipher += DES(list_xor(m, last_cipher_list), Key)
         print('Result: ', cipher)
+        print()
+        return cipher
     else:
         # Check input
         if (len(Message) % 64 != 0) or (len(Message) < 128):
             print('The length of cipher text must be multiple of 64, and at least 128.')
-            return
+            return 'The length of cipher text must be multiple of 64, and at least 128.'
 
         # Decrypt a cipher text
         print('Decrypt cipher text:')
@@ -314,7 +315,5 @@ def main():
                 result += list2string(list_xor(result_temp, last_text))
         result = unpadding(result)
         print('Result: ', result)
-    return
-
-
-main()
+        print()
+        return result
