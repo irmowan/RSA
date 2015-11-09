@@ -2,6 +2,7 @@ __author__ = 'irmo'
 import random
 import tkinter as tk
 import tkinter.filedialog
+import DES_Console
 # 128 bit RSA algorithm
 
 print("Hello, RSA!")
@@ -186,6 +187,7 @@ class Application(tk.Frame):
         self.SaveTextButton.grid(column=4, row=8)
         self.ReadmeLabel.grid(column=1, row=9, columnspan=3)
 
+    # TODO: Add input legality test
     def generating_dual_key(self):
         self.n, self.e, self.d = generating_key()
         self.DualKeyText.delete(0.0, tk.END)
@@ -218,16 +220,30 @@ class Application(tk.Frame):
         self.ReceiverKeyText.insert(tk.INSERT, s)
 
     def DES_encrypt(self):
-        pass
+        plain_text = self.SenderPlainText.get(1.0, tk.END)
+        key = self.SenderKeyText.get(1.0, tk.END)
+        cipher_text = DES_Console.main(plain_text, key, 1)
+        self.DESCipherText.delete(0.0, tk.END)
+        self.DESCipherText.insert(tk.INSERT, cipher_text)
 
     def DES_decrypt(self):
-        pass
+        cipher_text = self.DESCipherText.get(1.0, tk.END)
+        key = self.ReceiverKeyText.get(1.0, tk.END)
+        plain_text = DES_Console.main(cipher_text, key, 2)
+        self.ReceiverPlainText.delete(0.0, tk.END)
+        self.ReceiverPlainText.insert(tk.INSERT, plain_text)
 
     def open_text(self):
-        pass
+        input_text = tk.filedialog.askopenfile('r').read().strip()
+        self.SenderPlainText.delete(0.0, tk.END)
+        self.SenderPlainText.insert(tk.INSERT, input_text)
 
     def save_text(self):
-        pass
+        output_text = self.ReceiverPlainText.get('1.0', tk.END)
+        save_file_name = tk.filedialog.askopenfile('r').name
+        save_file = open(save_file_name, 'w')
+        save_file.write(output_text)
+        save_file.close()
 
 
 app = Application()
