@@ -187,20 +187,35 @@ class Application(tk.Frame):
         self.ReadmeLabel.grid(column=1, row=9, columnspan=3)
 
     def generating_dual_key(self):
-        n, e, d = generating_key()
+        self.n, self.e, self.d = generating_key()
         self.DualKeyText.delete(0.0, tk.END)
-        self.DualKeyText.insert(tk.INSERT, 'Public Key:\n' + 'n = ' + str(n) + '\n' +
-                                'e = ' + str(e) + '\n' + 'Private Key:\n' + 'd = ' +
-                                str(d) + '\n')
+        self.DualKeyText.insert(tk.INSERT, 'Public Key:\n' + 'n = ' + str(self.n) + '\n' +
+                                'e = ' + str(self.e) + '\n' + 'Private Key:\n' + 'd = ' +
+                                str(self.d) + '\n')
 
     def generating_DES_key(self):
-        pass
+        import random
+        s = ''
+        for i in range(64):
+            s += str(random.randint(0, 1))
+        self.SenderKeyText.delete(0.0, tk.END)
+        self.SenderKeyText.insert(tk.INSERT, s)
 
     def RSA_encrypt(self):
-        pass
+        key = self.SenderKeyText.get(1.0, tk.END)
+        key = int(key, 2)
+        s = encrypt(key, self.e, self.n)
+        self.RSAKeyText.delete(0.0, tk.END)
+        self.RSAKeyText.insert(tk.INSERT, bin(s)[2:])
 
     def RSA_decrypt(self):
-        pass
+        key = self.RSAKeyText.get(1.0, tk.END)
+        key = int(key, 2)
+        s = decrypt(key, self.d, self.n)
+        s = bin(s)[2:]
+        s = '0' * (64 - len(s)) + s
+        self.ReceiverKeyText.delete(0.0, tk.END)
+        self.ReceiverKeyText.insert(tk.INSERT, s)
 
     def DES_encrypt(self):
         pass
