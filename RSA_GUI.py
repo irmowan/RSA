@@ -187,7 +187,11 @@ class Application(tk.Frame):
         self.ReadmeLabel.grid(column=1, row=9, columnspan=3)
 
     def generating_dual_key(self):
-        pass
+        n, e, d = generating_key()
+        self.DualKeyText.delete(0.0, tk.END)
+        self.DualKeyText.insert(tk.INSERT, 'Public Key:\n' + 'n = ' + str(n) + '\n' +
+                                'e = ' + str(e) + '\n' + 'Private Key:\n' + 'd = ' +
+                                str(d) + '\n')
 
     def generating_DES_key(self):
         pass
