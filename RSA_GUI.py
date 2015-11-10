@@ -105,6 +105,9 @@ def decrypt(c, d, n):
 class Application(tk.Frame):
     def __init__(self, master=None):
         tk.Frame.__init__(self, master)
+        self.n = 0
+        self.e = 0
+        self.d = 0
         self.LabelTitile = tk.Label(self, text='RSA with DES')
         self.LabelSender = tk.Label(self, text='\n\nSender 发送方\n\n')
         self.LabelReceiver = tk.Label(self, text='\n\nReceiver 接收方\n\n')
@@ -204,34 +207,50 @@ class Application(tk.Frame):
         self.SenderKeyText.insert(tk.INSERT, s)
 
     def RSA_encrypt(self):
-        key = self.SenderKeyText.get(1.0, tk.END)
-        key = int(key, 2)
-        s = encrypt(key, self.e, self.n)
+        key = self.SenderKeyText.get(1.0, tk.END).strip()
+        if self.n:
+            if len(key) == 64:
+                key = int(key, 2)
+                s = encrypt(key, self.e, self.n)
+                s = bin(s)[2:]
+            else:
+                s = 'DES key must be 64 bit.\n'
+        else:
+            s = 'Please generate RSA dual key first.\n'
         self.RSAKeyText.delete(0.0, tk.END)
-        self.RSAKeyText.insert(tk.INSERT, bin(s)[2:])
+        self.RSAKeyText.insert(tk.INSERT, s)
 
     def RSA_decrypt(self):
-        key = self.RSAKeyText.get(1.0, tk.END)
-        key = int(key, 2)
-        s = decrypt(key, self.d, self.n)
-        s = bin(s)[2:]
-        s = '0' * (64 - len(s)) + s
+        if self.n:
+            key = self.RSAKeyText.get(1.0, tk.END).strip()
+            if len(key) == 0:
+                s = 'RSA cipher is empty.\n'
+            else:
+                key = int(key, 2)
+                s = decrypt(key, self.d, self.n)
+                s = bin(s)[2:]
+                s = '0' * (64 - len(s)) + s
+        else:
+            s = 'Please generate RSA dual key first.\n'
         self.ReceiverKeyText.delete(0.0, tk.END)
         self.ReceiverKeyText.insert(tk.INSERT, s)
 
     def DES_encrypt(self):
+        self.DESCipherText.delete(0.0, tk.END)
         plain_text = self.SenderPlainText.get(1.0, tk.END)
         key = self.SenderKeyText.get(1.0, tk.END)
         cipher_text = DES_Console.main(plain_text, key, 1)
-        self.DESCipherText.delete(0.0, tk.END)
         self.DESCipherText.insert(tk.INSERT, cipher_text)
 
     def DES_decrypt(self):
-        cipher_text = self.DESCipherText.get(1.0, tk.END)
-        key = self.ReceiverKeyText.get(1.0, tk.END)
-        plain_text = DES_Console.main(cipher_text, key, 2)
         self.ReceiverPlainText.delete(0.0, tk.END)
-        self.ReceiverPlainText.insert(tk.INSERT, plain_text)
+        try:
+            cipher_text = self.DESCipherText.get(1.0, tk.END)
+            key = self.ReceiverKeyText.get(1.0, tk.END)
+            plain_text = DES_Console.main(cipher_text, key, 2)
+            self.ReceiverPlainText.insert(tk.INSERT, plain_text)
+        except Exception:
+            self.ReceiverPlainText.insert(tk.INSERT, 'Something has wrong. Please check your DES key is true.\n')
 
     def open_text(self):
         input_text = tk.filedialog.askopenfile('r').read().strip()
